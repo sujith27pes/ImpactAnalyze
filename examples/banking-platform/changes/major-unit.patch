@@ -1,0 +1,10 @@
+--- a/payments-service/src/main/java/bank/payments/PaymentService.java
++++ b/payments-service/src/main/java/bank/payments/PaymentService.java
+@@ -9,6 +9,6 @@
+         if (id == null || id.isBlank() || amountMajor == null || amountMajor.signum() <= 0) throw new IllegalArgumentException("Invalid payment");
+         if (!"USD".equals(currency)) throw new IllegalArgumentException("Demo accepts USD only");
+         amountMajor = amountMajor.setScale(2, java.math.RoundingMode.UNNECESSARY);
+-        return new PaymentEvent(id, amountMajor.movePointRight(2), AmountUnit.MINOR, currency);
++        return new PaymentEvent(id, amountMajor, AmountUnit.MAJOR, currency);
+     }
+ }

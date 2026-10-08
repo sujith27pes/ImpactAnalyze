@@ -1,0 +1,219 @@
+{
+  "python_tests": {
+    "passed": 54,
+    "live_nvidia_call": false,
+    "provider_tests": "Mock HTTP responses; real inference requires user key",
+    "coverage": "Graph/reference ingestion, scoped joins and negative cases, parser comparability, capture races, targeted test references, SQL graph pages, historical review, queue/cancellation and NVIDIA transport budgets",
+    "latest_targeted_check": "Full backend suite: 54 passed, including safe AI failure categories and Jira export coverage."
+  },
+  "maven_counterfactual": {
+    "created": 1791438658.6707828,
+    "fixture_fingerprint": "d4dc54512b89427dccc6dac9090bb1c6c2f6d748cd38767849043a616065e89a",
+    "patch_fingerprints": {
+      "ledger-unit-fix.patch": "7a290f46634ceef3038e1d25c010c5ad93d8c9720f280ce11692615ced4dd208",
+      "major-unit.patch": "c210e4cbc691070f8ca9892b75d3cc7babd91aae5ca387a01ebd5f13749066bc"
+    },
+    "results": [
+      {
+        "scenario": "baseline",
+        "passed": true,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": []
+      },
+      {
+        "scenario": "producer-only-change",
+        "passed": false,
+        "tests": 5,
+        "failures": 2,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": [
+          "major-unit.patch"
+        ]
+      },
+      {
+        "scenario": "producer-and-consumer-fix",
+        "passed": true,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": [
+          "major-unit.patch",
+          "ledger-unit-fix.patch"
+        ]
+      }
+    ]
+  },
+  "http_journey": {
+    "transport": "4 independent Spring Boot HTTP services",
+    "duplicateCountedOnce": true,
+    "paymentId": "http-smoke-9a503250-83ab-4dbb-8f50-fb3c28909c2e",
+    "expected": "125.50 USD",
+    "created": 1791438120,
+    "reportingTotal": "125.5",
+    "status": "VERIFIED",
+    "reconciliationTotal": "125.5"
+  },
+  "postgres_compose_tested": false,
+  "polyglot_counterfactual": {
+    "created": 1791442779.3630643,
+    "fixture_fingerprint": "8b53bce72e283b21bd7b0f636b935bd733e6d19e657fbfed866a3111068c7ff8",
+    "patch_fingerprint": "a4d23dafcd90f7fa429836703c47b913856da497d9f97fa268d544e4b8b2eb75",
+    "scope": "Authored Python endpoint test in disposable copies; Go/TypeScript/SQL execution not claimed",
+    "results": [
+      {
+        "scenario": "Baseline",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "expectation_verified": true,
+        "source_fingerprint": "3932d5ce9accde603376fd884efb488017b90323288674211cb6df63357b1180"
+      },
+      {
+        "scenario": "Producer endpoint only",
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "passed": false,
+        "expectation_verified": true,
+        "source_fingerprint": "a2fb145a940ecc35d1fa02ffa2c8b6403318d033cbdd853bacb96be4e8d1b99c"
+      },
+      {
+        "scenario": "Consumer expectation migrated",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "expectation_verified": true,
+        "source_fingerprint": "d22d9dce4373e377c185d888e8070e45363c8c57382068d825e80d50a89865d5"
+      }
+    ]
+  },
+  "reference_ingestion": {
+    "evaluated_files": 997,
+    "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+    "results": [
+      {
+        "archive": "ImpRec-master",
+        "repository_captured_files": 50,
+        "evaluated_files": 14,
+        "nodes": 214,
+        "edges": 159,
+        "unresolved": 248,
+        "languages": {
+          "C#": 13,
+          "Other / configuration": 1
+        },
+        "files_with_parser_facts": 9,
+        "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+        "seconds": 1.81,
+        "parser_status": "PARSED",
+        "enola_version": "0.4.26",
+        "facts_sha256": "sha256:015da148d803b4419e3bc9c6b7dfeaef9040f8d3f4ebdb589d453317ebd08b70"
+      },
+      {
+        "archive": "repohelix-main",
+        "repository_captured_files": 463,
+        "evaluated_files": 255,
+        "nodes": 4486,
+        "edges": 9153,
+        "unresolved": 4800,
+        "languages": {
+          "JavaScript": 1,
+          "Other / configuration": 5,
+          "TypeScript": 249
+        },
+        "files_with_parser_facts": 250,
+        "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+        "seconds": 11.15,
+        "parser_status": "PARSED",
+        "enola_version": "0.4.26",
+        "facts_sha256": "sha256:9c2a7317518007312989b501f213e5460db7fa0db716239aad201392dbf975ad"
+      },
+      {
+        "archive": "axiomcodegraph-dev",
+        "repository_captured_files": 3450,
+        "evaluated_files": 253,
+        "nodes": 887,
+        "edges": 746,
+        "unresolved": 649,
+        "languages": {
+          "C#": 3,
+          "Java": 205,
+          "JavaScript": 16,
+          "Other / configuration": 3,
+          "Python": 12,
+          "TypeScript": 14
+        },
+        "files_with_parser_facts": 239,
+        "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+        "seconds": 19.14,
+        "parser_status": "PARSED",
+        "enola_version": "0.4.26",
+        "facts_sha256": "sha256:02bef808ce22a1fa7c074fdddca6ebad36e90841d3017d2cacf50df3a7060491"
+      },
+      {
+        "archive": "codexqa-main",
+        "repository_captured_files": 649,
+        "evaluated_files": 224,
+        "nodes": 4173,
+        "edges": 8351,
+        "unresolved": 6031,
+        "languages": {
+          "JavaScript": 16,
+          "Other / configuration": 2,
+          "Python": 67,
+          "TypeScript": 139
+        },
+        "files_with_parser_facts": 222,
+        "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+        "seconds": 26.51,
+        "parser_status": "PARSED",
+        "enola_version": "0.4.26",
+        "facts_sha256": "sha256:f18bee7e5126493bf9f29703292441401887e9fb21db3df4e57c48f23f583fb5"
+      },
+      {
+        "archive": "enola-main",
+        "repository_captured_files": 1376,
+        "evaluated_files": 251,
+        "nodes": 2494,
+        "edges": 2842,
+        "unresolved": 4862,
+        "languages": {
+          "Go": 155,
+          "Java": 15,
+          "JavaScript": 11,
+          "Other / configuration": 1,
+          "Protobuf/gRPC": 2,
+          "Python": 25,
+          "Rust": 2,
+          "TypeScript": 40
+        },
+        "files_with_parser_facts": 245,
+        "scope": "Bounded safely extracted text sample: up to 250 language files plus root manifests. Not a complete checkout or accuracy benchmark. No repository code executed.",
+        "seconds": 41.05,
+        "parser_status": "PARSED",
+        "enola_version": "0.4.26",
+        "facts_sha256": "sha256:516d393bf50df4bdabea5dccd5f0fab5f36b30b2075c562d9d517406f2c46352"
+      }
+    ],
+    "graph_policy_at_run": "knowledge-graph-v8; bounded parser compatibility run"
+  },
+  "javascript_syntax_checks": "experience.js, app.js and knowledge.js passed node --check",
+  "ui_verification": "Browser checked: beginner guide, pre-analysis navigation guidance, form validation and Enter key, saved endpoint report, annotated scope counts, exact source excerpts, test planning navigation and visible connection inspection. Existing reports opened; no new inference submitted. Narrow browser layout checked.",
+  "limits": "No calibrated accuracy percentage or universal discovery guarantee. Docker/PostgreSQL deployment not exercised. No live NVIDIA request.",
+  "graph_policy_delivered": "knowledge-graph-v11",
+  "presentation_tests": {
+    "passed": 4,
+    "command": "node --test tests/test_experience.cjs",
+    "scope": "Readable evidence provenance, escaped source metadata, accurate AI failure guidance and accepted-draft status"
+  }
+}

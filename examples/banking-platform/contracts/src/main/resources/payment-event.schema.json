@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "paymentId",
+    "amount",
+    "amountUnit",
+    "currency"
+  ],
+  "properties": {
+    "paymentId": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "amountUnit": {
+      "enum": [
+        "MINOR",
+        "MAJOR"
+      ]
+    },
+    "currency": {
+      "enum": [
+        "USD"
+      ]
+    }
+  }
+}

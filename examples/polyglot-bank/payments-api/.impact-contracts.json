@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "service": "payments",
+  "owner": "Payments engineering",
+  "contracts": [
+    {
+      "protocol": "http",
+      "role": "provides",
+      "file": "app.py",
+      "line": 10,
+      "resource": "/payments",
+      "scope": "http://payments.demo:9000",
+      "environment": "synthetic-demo",
+      "method": "POST"
+    },
+    {
+      "protocol": "event",
+      "role": "publishes",
+      "file": "app.py",
+      "line": 12,
+      "resource": "bank.payment.audit",
+      "scope": "demo-kafka",
+      "environment": "synthetic-demo",
+      "schema": "payment-event-v1"
+    },
+    {
+      "protocol": "database",
+      "role": "writes",
+      "file": "app.py",
+      "line": 17,
+      "resource": "ledger_postings",
+      "scope": "demo-bank-db",
+      "environment": "synthetic-demo"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>hackathon.bank</groupId><artifactId>banking-platform</artifactId><version>1.0.0</version></parent><artifactId>contracts</artifactId><dependencies></dependencies></project>

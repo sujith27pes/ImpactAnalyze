@@ -1,0 +1,11 @@
+--- a/ledger-service/src/main/java/bank/ledger/LedgerService.java
++++ b/ledger-service/src/main/java/bank/ledger/LedgerService.java
+@@ -9,7 +9,7 @@
+ public class LedgerService {
+     private final Map<String, Posting> postings = new LinkedHashMap<>();
+     public synchronized Posting accept(PaymentEvent event) {
+-        BigDecimal amountMajor = event.amount().movePointLeft(2);
++        BigDecimal amountMajor = (event.amountUnit() == bank.contracts.AmountUnit.MAJOR ? event.amount() : event.amount().movePointLeft(2));
+         Posting candidate = new Posting(event.paymentId(), amountMajor, event.currency());
+         Posting existing = postings.get(event.paymentId());
+         if (existing != null && !existing.equals(candidate)) throw new IllegalArgumentException("Conflicting duplicate");

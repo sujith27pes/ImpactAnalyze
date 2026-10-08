@@ -1,0 +1,51 @@
+x-app: &app
+  build: .
+  env_file: .env
+  environment: &environment
+    DATABASE_URL: postgresql+psycopg://impact:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/impact
+    IMPACT_API_TOKEN: ${IMPACT_API_TOKEN:?Set IMPACT_API_TOKEN in .env for deployment}
+    IMPACT_INITIALIZE_SCHEMA: "0"
+    REPOSITORY_ROOTS: /app/examples
+  depends_on:
+    init:
+      condition: service_completed_successfully
+  restart: unless-stopped
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: impact
+      POSTGRES_DB: impact
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - impact-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U impact -d impact"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  init:
+    build: .
+    env_file: .env
+    environment:
+      <<: *environment
+      IMPACT_INITIALIZE_SCHEMA: "1"
+    command: ["python", "-c", "from studio.config import settings; from studio.db import Store; Store(settings.database_url)"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    <<: *app
+    ports: ["127.0.0.1:8080:8080"]
+    command: ["python", "-m", "uvicorn", "studio.api:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "2"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+  worker:
+    <<: *app
+    command: ["python", "-m", "studio.worker"]
+volumes:
+  impact-db:

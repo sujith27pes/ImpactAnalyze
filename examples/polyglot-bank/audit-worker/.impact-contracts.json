@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "service": "audit-worker",
+  "owner": "Audit engineering",
+  "contracts": [
+    {
+      "protocol": "event",
+      "role": "subscribes",
+      "file": "main.go",
+      "line": 5,
+      "resource": "bank.payment.audit",
+      "scope": "demo-kafka",
+      "environment": "synthetic-demo",
+      "schema": "payment-event-v1"
+    },
+    {
+      "protocol": "database",
+      "role": "writes",
+      "file": "main.go",
+      "line": 10,
+      "resource": "audit_rows",
+      "scope": "demo-bank-db",
+      "environment": "synthetic-demo"
+    }
+  ]
+}

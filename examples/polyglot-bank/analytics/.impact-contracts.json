@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "service": "analytics",
+  "owner": "Finance reporting",
+  "contracts": [
+    {
+      "protocol": "database",
+      "role": "reads",
+      "file": "report.sql",
+      "line": 2,
+      "resource": "ledger_postings",
+      "scope": "demo-bank-db",
+      "environment": "synthetic-demo"
+    },
+    {
+      "protocol": "database",
+      "role": "reads",
+      "file": "report.sql",
+      "line": 3,
+      "resource": "audit_rows",
+      "scope": "demo-bank-db",
+      "environment": "synthetic-demo"
+    }
+  ]
+}

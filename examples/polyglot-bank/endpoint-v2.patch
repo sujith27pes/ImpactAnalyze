@@ -1,0 +1,22 @@
+--- a/app.py
++++ b/app.py
+@@ -7,7 +7,7 @@
+ def minor_units(amount: Decimal) -> int:
+     return int(amount * 100)
+ 
+-@app.post("/payments")
++@app.post("/payments/v2")
+ def accept(amount: Decimal):
+     event = {"amountMinor": minor_units(amount), "currency": "USD"}
+     audit_events.append(event)
+--- a/.impact-contracts.json
++++ b/.impact-contracts.json
+@@ -8,7 +8,7 @@
+       "role": "provides",
+       "file": "app.py",
+       "line": 10,
+-      "resource": "/payments",
++      "resource": "/payments/v2",
+       "scope": "http://payments.demo:9000",
+       "environment": "synthetic-demo",
+       "method": "POST"

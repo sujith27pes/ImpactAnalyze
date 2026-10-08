@@ -1,0 +1,8 @@
+{
+  "payments-service": "Payments engineering",
+  "ledger-service": "Ledger engineering",
+  "reconciliation-service": "Reconciliation QA",
+  "reporting-service": "Reporting BA",
+  "contracts": "Integration architecture",
+  "journey-tests": "Cross-system QA"
+}

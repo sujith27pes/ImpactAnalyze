@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "service": "customer-web",
+  "owner": "Digital channels",
+  "contracts": [
+    {
+      "protocol": "http",
+      "role": "consumes",
+      "file": "client.ts",
+      "line": 2,
+      "resource": "/payments",
+      "scope": "http://payments.demo:9000",
+      "environment": "synthetic-demo",
+      "method": "POST"
+    }
+  ]
+}
