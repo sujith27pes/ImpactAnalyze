@@ -38,7 +38,7 @@ class Nvidia:
         row=self.store.row(budgets,self.scope)
         return {'configured':bool(self.settings.api_key),'model':self.settings.model,'requests':row['requests'],'cache_hits':row['cache_hits'],'daily_reserved':row['daily'] if row['day']==int(time.time()//86400) else 0,'cooldown_until':row['blocked_until'],'policy':{'requests_per_minute':self.settings.rpm,'estimated_tokens_per_minute':self.settings.tpm,'daily_requests':self.settings.daily_calls,'concurrent_inferences':1},'quota_note':'These are application guardrails, not promised NVIDIA account quotas.'}
     def infer(self, report):
-        if not self.settings.api_key: return {'status':'NOT_CONFIGURED','message':'Add NVIDIA_API_KEY to the backend .env and restart the API and worker. Source analysis is available; no model has been called.'}
+        if not self.settings.api_key: return {'status':'NOT_CONFIGURED','message':'Set NVIDIA_API_KEY in the backend environment or a private .env, then restart the API and worker. Source analysis is available; no model has been called.'}
         max_chars=min(self.settings.max_input_chars,max(1000,self.settings.tpm-self.settings.max_output-len(SYSTEM)-1500))
         context=inference_context(report,max_chars)
         if not context['evidence']: return {'status':'INSUFFICIENT_EVIDENCE','message':'No cited context fits the configured budget. Confirm change entry points or adjust the application token budget.'}

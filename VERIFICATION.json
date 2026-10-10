@@ -4,7 +4,7 @@
     "live_nvidia_call": false,
     "provider_tests": "Mock HTTP responses; real inference requires user key",
     "coverage": "Graph/reference ingestion, scoped joins and negative cases, parser comparability, capture races, targeted test references, SQL graph pages, historical review, queue/cancellation and NVIDIA transport budgets",
-    "latest_targeted_check": "Full backend suite: 54 passed, including safe AI failure categories and Jira export coverage."
+    "latest_targeted_check": "Repository cleanup validation: 54 backend tests and 4 presentation tests passed; run.py --check passed."
   },
   "maven_counterfactual": {
     "created": 1791438658.6707828,
@@ -209,11 +209,26 @@
   },
   "javascript_syntax_checks": "experience.js, app.js and knowledge.js passed node --check",
   "ui_verification": "Browser checked: beginner guide, pre-analysis navigation guidance, form validation and Enter key, saved endpoint report, annotated scope counts, exact source excerpts, test planning navigation and visible connection inspection. Existing reports opened; no new inference submitted. Narrow browser layout checked.",
-  "limits": "No calibrated accuracy percentage or universal discovery guarantee. Docker/PostgreSQL deployment not exercised. No live NVIDIA request.",
+  "limits": "No calibrated accuracy percentage or universal discovery guarantee. Docker/PostgreSQL deployment not exercised. Automated provider tests use mocked transports; a separate historical live AI demo is recorded in docs/demo/capture-receipt.json.",
   "graph_policy_delivered": "knowledge-graph-v11",
   "presentation_tests": {
     "passed": 4,
     "command": "node --test tests/test_experience.cjs",
     "scope": "Readable evidence provenance, escaped source metadata, accurate AI failure guidance and accepted-draft status"
+  },
+  "repository_validation": {
+    "date": "2026-10-10",
+    "backend_tests_passed": 54,
+    "presentation_tests_passed": 4,
+    "dependency_check": "passed",
+    "credential_pattern_scan": "No matches in Git candidate files or 93 existing history blobs. Pattern scanning is not a complete secret detector.",
+    "ignore_rules": "Private environment variants, runtime data, caches, build output and archives excluded; source and screenshots remain visible.",
+    "documentation_links": "passed"
+  },
+  "live_ai_demo": {
+    "captured_on": "2026-10-09",
+    "receipt": "docs/demo/capture-receipt.json",
+    "status": "GROUNDED_DRAFT",
+    "validation_scope": "Structured response and allowed citation IDs, not semantic correctness. Historical run, not repeated during cleanup."
   }
 }

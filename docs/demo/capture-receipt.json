@@ -1,0 +1,122 @@
+{
+  "captured_on": "2026-10-09",
+  "scenarios": "Synthetic fixtures only",
+  "ai": {
+    "model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "status": "GROUNDED_DRAFT",
+    "duration_seconds": 57.05,
+    "usage": {
+      "completion_tokens": 2165,
+      "prompt_tokens": 7418,
+      "total_tokens": 9583
+    },
+    "evidence_sent": 21,
+    "risks": 6,
+    "test_proposals": 6,
+    "ba_questions": 6,
+    "gate": "BLOCKED_BY_SOURCE_RULE",
+    "validation_scope": "Response schema and allowed citation IDs; not semantic correctness"
+  },
+  "cache_check": {
+    "cache_hit": true,
+    "requests_before": 8,
+    "requests_after": 8,
+    "cache_hits_before": 0,
+    "cache_hits_after": 1
+  },
+  "source_drift": {
+    "stale": false,
+    "changed_files": [],
+    "repositories": [
+      {
+        "name": "Synthetic banking platform",
+        "repository_id": "1e343719-0b3d-441d-af32-f13b14b37731",
+        "snapshot_id": "6549d7991baf715d5ebdbf481a5fd6d2e2a32761e19b6e21bedc703f8a0ea949",
+        "stale": false,
+        "changed_files": []
+      }
+    ],
+    "snapshot_id": "6549d7991baf715d5ebdbf481a5fd6d2e2a32761e19b6e21bedc703f8a0ea949",
+    "checked_at": 1791519329.1710815
+  },
+  "java_fixture": {
+    "available": true,
+    "matches_current_source": true,
+    "created": 1791438658.6707828,
+    "results": [
+      {
+        "scenario": "baseline",
+        "passed": true,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": []
+      },
+      {
+        "scenario": "producer-only-change",
+        "passed": false,
+        "tests": 5,
+        "failures": 2,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": [
+          "major-unit.patch"
+        ]
+      },
+      {
+        "scenario": "producer-and-consumer-fix",
+        "passed": true,
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "expectation_verified": true,
+        "suite": "MoneyJourneyTest",
+        "patches": [
+          "major-unit.patch",
+          "ledger-unit-fix.patch"
+        ]
+      }
+    ],
+    "scope": "Executed authored fixture, not tests executed by the analysis job"
+  },
+  "endpoint_fixture": {
+    "created": 1791442779.3630643,
+    "fixture_fingerprint": "8b53bce72e283b21bd7b0f636b935bd733e6d19e657fbfed866a3111068c7ff8",
+    "patch_fingerprint": "a4d23dafcd90f7fa429836703c47b913856da497d9f97fa268d544e4b8b2eb75",
+    "scope": "Authored Python endpoint test in disposable copies; Go/TypeScript/SQL execution not claimed",
+    "results": [
+      {
+        "scenario": "Baseline",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "expectation_verified": true,
+        "source_fingerprint": "3932d5ce9accde603376fd884efb488017b90323288674211cb6df63357b1180"
+      },
+      {
+        "scenario": "Producer endpoint only",
+        "tests": 3,
+        "failures": 1,
+        "errors": 0,
+        "passed": false,
+        "expectation_verified": true,
+        "source_fingerprint": "a2fb145a940ecc35d1fa02ffa2c8b6403318d033cbdd853bacb96be4e8d1b99c"
+      },
+      {
+        "scenario": "Consumer expectation migrated",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
+        "expectation_verified": true,
+        "source_fingerprint": "d22d9dce4373e377c185d888e8070e45363c8c57382068d825e80d50a89865d5"
+      }
+    ],
+    "available": true,
+    "matches_current_source": true
+  }
+}

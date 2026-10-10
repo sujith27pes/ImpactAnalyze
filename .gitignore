@@ -1,7 +1,61 @@
-.env
-.venv/
-data/
-__pycache__/
-.pytest_cache/
-examples/**/target/
+# Private configuration and credentials
+[.][eE][nN][vV]*
+*.[eE][nN][vV]
+*.[eE][nN][vV].*
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+.netrc
+.pypirc
+
+# Local runtime state and dependencies
+/data/
+.venv*/
+venv/
+env/
+node_modules/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
 *.log
+*.pid
+
+# Python caches and reports
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage/
+
+# Build output, temporary files and distribution archives
+target/
+build/
+dist/
+*.class
+*.jar
+*.war
+*.zip
+*.7z
+*.tar
+*.gz
+*.tmp
+*.temp
+*.bak
+*~
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

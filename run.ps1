@@ -15,9 +15,8 @@ if ($installedHash -ne $requirementsHash) {
     if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
     Set-Content -LiteralPath $installedHashFile -Value $requirementsHash
 }
-if (-not (Test-Path -LiteralPath '.env')) { Copy-Item -LiteralPath '.env.example' -Destination '.env' }
 New-Item -ItemType Directory -Force -Path data | Out-Null
 $workerProcess = Start-Process -FilePath $venvPython -ArgumentList @('-m','studio.worker') -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput 'data\worker.log' -RedirectStandardError 'data\worker.err.log'
-Write-Host "Impact Studio: http://127.0.0.1:$Port ; NVIDIA key belongs in .env, never in the browser."
+Write-Host "Impact Studio: http://127.0.0.1:$Port ; configure NVIDIA_API_KEY on the backend, never in the browser."
 try { & $venvPython -m uvicorn studio.api:app --host 127.0.0.1 --port $Port }
 finally { & taskkill /PID $workerProcess.Id /T /F | Out-Null }

@@ -1,156 +1,241 @@
 # Impact Studio
 
-Python AI change impact and testing platform with an evidence knowledge graph across repositories. The API, workers, inference controls, graph normalization and review workflow are Python. A pinned local Enola parser provides broader language extraction. The **separate Maven/Spring Boot project remains an inference fixture**.
+### AI change review, backed by source evidence
 
-Two demo stories: an endpoint change disconnects a TypeScript consumer from a Python API while Go audit and SQL reporting remain in review scope; a schema-valid Java event change silently understates downstream money by 100x. The platform finds the source path, exposes the violated invariant, selects existing regression suites and asks Nemotron for cited risk reasoning and BA-ready test proposals. It prepares an evidence package for the BA → developer → QA / Defender workflow.
+**Turn a change request into a map of affected systems, an explanation of the risk, and a focused testing plan.**
+
+Changing a payment endpoint can take one line of code. Finding every consumer, coordinating its owner, protecting audit events and choosing the right regression tests can take several teams.
+
+Impact Studio brings that investigation into one guided workspace. It captures the selected repositories, builds an evidence knowledge graph, compares proposed changes, and asks NVIDIA Nemotron for cited review suggestions. Every result can be inspected at its source. Unresolved relationships remain visible.
+
+The tool is built in **Python**. The bundled **Maven / Spring Boot banking application is a separate system to analyze**, with real downstream services and authored regression tests.
+
+## Two changes that make the value visible
+
+| Change | What Impact Studio reveals | Independently verified sample outcome |
+|---|---|---|
+| Move `POST /payments` to `/payments/v2` | The TypeScript consumer loses its scoped HTTP contract match. Go audit and SQL reporting remain in review scope through event and database declarations. | Python fixture: **3 pass → 1 failure → 3 pass** after updating the consumer expectation. |
+| Change a Java payment event from minor to major units | A downstream conversion still divides by 100. **125.50 USD becomes 1.255 USD**, despite a valid event format. A narrow source rule identifies the interpretation mismatch. | Maven fixture: **5 pass → 2 failures → 5 pass** after a coordinated consumer fix. |
+
+These experiments use disposable copies of the authored fixtures. They are separate from an analysis job, which **selects tests but does not execute them**. The Java amount rule is deliberately specific; it does not claim to detect every financial defect.
+
+## Features that change the review process
+
+### 1. Rehearse a change before it reaches a deployment
+
+Supply a unified diff and compare the baseline graph with the proposed graph. See which connections appear, disappear or become unresolved, and which captured consumers lose their provider match. The original repository stays unchanged.
+
+**Useful when:** a small API or contract change crosses team boundaries. A lost match becomes a concrete compatibility review with source references, rather than a general warning to “check downstream systems.”
+
+### 2. Follow dependencies across languages and repositories
+
+The graph combines static parser facts, supported Java/Maven and Python analysis, and explicit owner declarations. It namespaces source entities by repository and joins HTTP, event, database, gRPC and package contracts within their declared deployment scope.
+
+An HTTP join checks method, route, origin and environment. Event joins require broker identity; database joins require database identity. Missing or ambiguous providers remain unresolved. Where supported parsed HTTP routes contradict a provider declaration, the declared join is withheld.
+
+**Useful when:** one business journey spans an API, web client, worker and reporting repository. Teams can distinguish a resolved source relationship, a declared connection and a conservative file association.
+
+### 3. Catch a business meaning change that a valid format can conceal
+
+The banking fixture demonstrates a change that preserves the event format while breaking monetary interpretation. The source rule uses decimal arithmetic to show the expected and counterfactual values, then links the result to the downstream conversion and relevant tests.
+
+**Useful when:** technical compatibility alone is insufficient. Reviewers see the business consequence of the supported pattern, with an inspectable explanation.
+
+### 4. Open the evidence behind a finding
+
+Click a button such as **`app.py · lines 10–14`** to inspect the captured excerpt and its project. Technical details retain the internal evidence identifier, extraction basis and SHA256 source hash. Parser receipts record version and output identity. A workspace drift check detects changes since the report was captured.
+
+**Useful when:** a reviewer needs to challenge a result, reproduce its basis or hand it to another team. AI advice cannot replace the evidence trail.
+
+### 5. Produce a focused testing and ownership handoff
+
+Supported source references connect affected components to existing test candidates. The report shows selected tests, components without direct test links, BA acceptance drafts and suggested work for each owner.
+
+Download a **Jira review brief**, **Gherkin scenarios** or the **full evidence report**. The Jira brief includes contract alerts, source findings, AI availability and unresolved scope. Use approved scenarios in the organization's existing Defender / BDD process; direct Jira publication and Defender execution are not configured.
+
+### 6. Make uncertainty part of the result
+
+The coverage ledger shows files captured, files with extracted facts, skipped files and unresolved references. Unsupported formats retain file evidence and explicit gaps. Graph counts are explained as review scope, never as accuracy percentages or passed-test counts.
+
+**Useful when:** a team must decide what still needs investigation. An unreached component is never presented as proof of safety.
+
+### 7. Retain knowledge from human reviews
+
+Save a reviewed planning lesson and retrieve related notes through intent and shared source components. A future reviewer can see why a similar change needed special attention. Lessons remain human planning guidance and cannot approve a release or certify test execution.
+
+### 8. Use a constrained AI allowance responsibly
+
+Workers share a database-backed inference slot, request budgets, validated cache, cooldown and circuit breaker. Context is bounded to relevant evidence. Identical validated contexts can reuse a response without another inference call.
+
+Timeouts, provider outages and rejected replies leave the source report available. HTTP 202 responses use bounded, budgeted status checks without duplicating the inference POST. There are no blind automatic POST retries.
+
+## A workflow for the whole team
+
+**Describe → Review impact → Check sources → Plan tests**
+
+1. **BA:** describe what should change and what must keep working. Select the changing project and relevant downstream projects.
+2. **Developer:** optionally add the proposed diff, investigate compatibility alerts and inspect the connection map.
+3. **Reviewer:** open supporting file references, check unresolved relationships and confirm deployment assumptions.
+4. **Tester:** review existing test candidates and acceptance scenarios, add missing cases and run them in the normal test environment.
+5. **Team:** check for source drift and attach the review brief and actual test results to Jira.
+
+The interface includes ready-to-use examples, contextual guidance, a terminology guide and readable AI failure messages. Saved analyses open without submitting a new AI request.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[Request and optional diff] --> API[FastAPI]
+    R[Selected repositories] --> CAP[Read-only capture and source hashes]
+    API --> CAP
+    CAP --> DB[(SQLite or PostgreSQL)]
+    DB --> W[Python workers with leases]
+    W --> P[Pinned parser and language adapters]
+    P --> G[Evidence knowledge graph]
+    C[Scoped owner declarations] --> G
+    G --> D[Impact paths, graph comparison and test selection]
+    D --> B[Shared inference budgets and cache]
+    B --> N[NVIDIA Nemotron]
+    N --> V[JSON and citation validation]
+    D --> O[Review report]
+    V --> O
+    O --> DB
+    DB --> UI[Guided review and exports]
+```
+
+| Layer | Technology and responsibility |
+|---|---|
+| Interface | HTML, CSS, JavaScript and SVG; guided review, graph exploration, source inspection and exports. |
+| API | Python 3.12+, FastAPI, Uvicorn and Pydantic; validation, repository capture and asynchronous job admission. |
+| Source extraction | Pinned Enola CLI 0.4.26, Tree-sitter Java, Python AST and Maven XML analysis. |
+| Knowledge graph | Python normalization and scoped contract matching; persisted nodes and edges with indexed SQL queries. A separate graph database is not required for this bounded workload. |
+| Persistence | SQLAlchemy; SQLite WAL for local use, PostgreSQL configuration for shared deployment. |
+| Workers | Separate Python processes; idempotency, leases, heartbeats, cancellation and owner-checked commits. |
+| AI | HTTPX adapter to NVIDIA; bounded context, shared admission, cache and structured response validation. |
+| Verification fixtures | Python / TypeScript / Go / SQL example workspace and a separate Maven / Spring Boot / JUnit banking platform. |
+
+### Scale and failure controls
+
+Source analysis and inference have separate controls. Adding workers does not increase the single shared AI concurrency allowance. Defaults bound the queue to 100 active jobs, each analysis to 8 repositories, and traversal to 2,000 nodes / 12 hops. Graph queries page at most 200 nodes.
+
+Source caches include repository, content, parser and policy identity. Inference caches include context, model and prompt identity. Transactions fence late worker commits; cancellation prevents a cancelled job from publishing its result. Parser failure exposes unknowns, while AI failure preserves source findings.
+
+The PostgreSQL Compose configuration includes schema initialization, two API processes and scalable workers. **Docker/PostgreSQL orchestration has not been exercised in this workspace.** See [ARCHITECTURE.md](ARCHITECTURE.md) for the lifecycle, trust boundaries and production deployment requirements.
 
 ## Run locally
 
-Requires Python 3.12+; Maven and Java 17+ are needed only to build / verify the authored Java fixture.
+Install dependencies from a local checkout. Internet access is needed for initial installation; hosted AI additionally needs an available NVIDIA key and model. Private configuration, runtime data, caches and build output are excluded from Git.
 
-```powershell
-Copy-Item .env.example .env
-# Edit .env locally: set NVIDIA_API_KEY. Do not put this key in the UI or source control.
-.\run.ps1
-```
+Python 3.12 or later is required. Java 17+ and Maven are needed only for the Java fixture's build and execution.
 
-Open http://127.0.0.1:8080, choose **Try endpoint-change example**, then **Analyze change** and **System connections**. Use **Try payment-value example** for the separate monetary conservation scenario. The local launcher binds only to loopback. Without a key, the source analyzer works and clearly reports **AI not connected**; it does not simulate model output.
+### Windows PowerShell
 
-If PowerShell blocks `.ps1` scripts, use the Python launcher instead. It starts the API and a hidden background worker without changing execution policy:
-
-```powershell
-python run.py
-# Existing interpreter in this workspace, if python is not on PATH:
-& "..\..\.venv-impact\Scripts\python.exe" run.py
-```
-
-Use an interpreter with `requirements.txt` installed. `run.py --check` verifies dependencies and the pinned parser without starting services. Ctrl+C stops the API and its worker. An occupied port is reported without terminating other programs; `--port 8081` is available.
-
-For the background demo already running in this workspace, stop it with `.\stop.ps1` before starting `.\run.ps1`. After editing .env, restart both API and worker so they load the new key. With the interactive launcher, Ctrl+C stops the API and its worker.
-
-Manual launch:
+Run these commands from the project root:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-.venv\Scripts\python -m uvicorn studio.api:app --host 127.0.0.1 --port 8080
-# Second terminal, same directory:
-.venv\Scripts\python -m studio.worker
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+& ".\.venv\Scripts\python.exe" run.py --check
+& ".\.venv\Scripts\python.exe" run.py
 ```
 
-For a real repository, set `REPOSITORY_ROOTS` to approved server directories separated by semicolons, restart, and register the repository path through the UI. Source capture accepts bounded UTF-8 text from any repository, including unfamiliar extensions. It excludes binary content, dependency/build directories, .env, credential-named files, files over 200 KB and symlinks. Unsupported source gets a file anchor and an explicit unknown; it is not silently interpreted as isolated. Pattern redaction is a precaution, not a complete data-loss-prevention system. Repository evidence is sent to NVIDIA when the configured worker performs inference; use approved code only. The analysis API never executes repository builds, source code, hooks or external fact providers. The parser reads a disposable, redacted snapshot with platform-owned configuration; parser update checks and history are disabled.
+No PowerShell script execution-policy change is needed. The Python launcher starts the API and a hidden worker. **Ctrl+C stops both.** If port 8080 is occupied, use `run.py --port 8081`.
 
-## Guided review
+### macOS / Linux
 
-The interface guides the team through **Describe → Review impact → Check sources → Plan tests**. Start with a sample, or add a local project and describe the request. Include relevant downstream projects. Exact code changes are optional developer input.
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python run.py --check
+.venv/bin/python run.py
+```
 
-Results begin with the main compatibility alert. Count cards explain the review scope; they are not accuracy scores or passed-test counts. Source buttons show the project, file and relevant lines, opening the captured excerpt. Internal `E-…` references and hashes remain available in expandable technical details and exports.
+Open **http://127.0.0.1:8080**. Choose **Try endpoint-change example**, then **Analyze change**. SQLite is the default; no database username or password is required. With no AI key, the source workflow still works and the UI shows **AI not connected**.
 
-AI failures show their reported cause and next action while retaining source results. An unavailable AI response cannot appear as accepted advice. Existing tests remain labelled **Suggested · not run**. The built-in **How to use this tool** guide explains the workflow and terminology. **AI status & history** opens saved reports without submitting new inference requests.
+### Connect NVIDIA when ready
 
-Run the presentation checks with `node --test tests/test_experience.cjs` and the backend suite with `python -m pytest -q`.
+Set backend environment variables before starting the launcher. Replace the placeholder locally; never paste your key into the browser or commit it.
 
-## Working features
+```powershell
+$env:NVIDIA_API_KEY = "YOUR_NVIDIA_KEY"
+$env:NVIDIA_MODEL = "nvidia/nemotron-3-super-120b-a12b"
+& ".\.venv\Scripts\python.exe" run.py
+```
 
-| Feature | What is implemented | Evidence / limit |
-|---|---|---|
-| Polyglot source graph | Enola 0.4.26 static facts, native Java/Maven adapter, Python AST checks, namespaced source nodes | Parser target IDs are required for source edges; resolution is static, not runtime proof |
-| Cross-repository contracts | Scoped HTTP, event, database, gRPC and package declarations join loaded repositories | HTTP method + origin + environment + route; events require broker identity; databases require database identity. Ambiguity withholds joins |
-| Dependency rehearsal | Parse the validated proposal in a disposable copy and compare graph edges | Lost consumer matches become review alerts. No deployment or source edit occurs |
-| Graph explorer | Interactive repository topology, clickable contracts, indexed and paginated source node queries | Source citations and edge strength are visible; complete raw graph can be exported |
-| Coverage ledger | Captured/skipped files, languages, facts by file, syntax errors and unresolved relationships | No invented confidence or accuracy percentage; missing facts remain unknown |
-| Change memory | Persist human planning lessons and retrieve by intent / shared source nodes | Historical suggestions are separate from dependency and test proof |
-| Request or diff analysis | BA intent candidates, strict diff validation and in-memory application | Intent anchors are hypotheses; diff anchors refer to actual captured declarations |
-| Semantic contract trap | Narrow, inspectable producer-unit / consumer-conversion rule with Decimal arithmetic | Source pattern rule is intentionally specific; it is not a general financial oracle |
-| Executable counterfactual | Baseline, producer-only failure, coordinated fix tested in disposable Maven copies | `scripts/verify_fixture.py`; source hash ties display to the authored fixture |
-| Nemotron reasoning | Cited risks, BA clarifications and tailored Given / When / Then proposals | Pydantic schema + evidence-ID validation; all accepted model content stays a review draft |
-| Targeted regression plan | Greedy selection from static test calls, Java test references and a narrow Python TestClient endpoint adapter | Test filenames identify candidates, not coverage; selected means not run |
-| Source drift check | Compare every selected repository against its immutable snapshot | Reanalysis is required after drift; there is no automatic approval |
-| Role handoff | Owner metadata, BA / developer / QA action lists, Jira brief and Gherkin export | Jira brief includes lost-consumer contract alerts, provider failure reasons and unresolved scope; external Jira and Defender connections are not implemented |
-| Trial API control | Shared database semaphore, RPM / estimated TPM / daily budgets, cache, cooldown, circuit breaker | Application policy limits, independent of actual account entitlement |
-| Durable workflow | Bounded queue, idempotent admission, leases, crash recovery, cancellation and owner-checked result commit | PostgreSQL deployment supplied; local run uses SQLite |
+On macOS / Linux, use `export NVIDIA_API_KEY="YOUR_NVIDIA_KEY"` before starting the app. The model shown is the application's default and can be changed through `NVIDIA_MODEL`. Availability and free/trial allowance depend on the NVIDIA account; they are not guaranteed by this project.
 
-## What “any repository” means
+| Setting | Default / purpose |
+|---|---|
+| `DATABASE_URL` | SQLite at `data/impact.db`; override for PostgreSQL. |
+| `REPOSITORY_ROOTS` | Bundled `examples` folder; semicolon-separated approved roots for other projects. |
+| `NVIDIA_RPM` / `NVIDIA_TPM` | 6 requests and 24,000 conservatively estimated token units per minute. |
+| `NVIDIA_DAILY_CALLS` | 100 daily requests reserved by the application. |
+| `NVIDIA_MAX_INPUT_CHARS` / `NVIDIA_MAX_OUTPUT_TOKENS` | 24,000 input characters / 2,500 output tokens. |
+| `IMPACT_API_TOKEN` | Optional application authentication. Supply this token through **API connection**; it is separate from the NVIDIA key. |
 
-Registration and file-level impact work without requiring Maven, a batch layout or a particular language. Semantic extraction depends on the installed language/framework adapters. The bundled parser offers broad language support; this workspace verifies source extraction on Python, Java, TypeScript, Go, C#, Rust and Terraform/HCL inputs. That is not a claim that every framework, language feature or downstream system is discovered.
+These budgets are **application policies**, not NVIDIA entitlement figures. Existing process environment variables take priority over an optional, private local `.env` file. Restart the API and worker after changing configuration.
 
-Downstream consumers outside the selected workspace cannot be inferred with certainty from one repository. Load their source and provide deployment bindings through `.impact-contracts.json`. The default adapters do not ingest production traces, discover brokers at runtime or inspect arbitrary deployed configuration. SQL/COBOL/custom formats can be represented by explicit contracts while their internal calls remain unknown.
+For Compose, create a private local `.env` containing `POSTGRES_PASSWORD` and `IMPACT_API_TOKEN`; optionally add `NVIDIA_API_KEY` and `NVIDIA_MODEL`. Use a strong URL-safe password for the supplied database URL. Then run `docker compose up --build -d`; add workers with `docker compose up -d --scale worker=2`. Keep that private file out of source control.
 
-An example contract file:
+## Review your own repositories
+
+Set `REPOSITORY_ROOTS`, restart, and select **+ Add project**. Register downstream source as additional projects, include them in the review, and describe the change. Add a matching diff for a more precise before-and-after comparison.
+
+Bounded UTF-8 source capture accepts different repository layouts and formats. **Semantic depth depends on the language and framework adapters.** Consumers outside the selected workspace, runtime routing, reflection and undeclared deployment bindings can remain unknown.
+
+Owner metadata and scoped interfaces use `.impact-contracts.json`. For example:
 
 ```json
 {
   "version": 1,
   "service": "payment-api",
   "owner": "Payments engineering",
-  "contracts": [
-    {
-      "protocol": "http", "role": "provides",
-      "file": "app.py", "line": 10,
-      "method": "POST", "resource": "/payments",
-      "scope": "https://payments.internal", "environment": "uat"
-    }
-  ]
+  "contracts": [{
+    "protocol": "http", "role": "provides",
+    "file": "app.py", "line": 10,
+    "method": "POST", "resource": "/payments",
+    "scope": "https://payments.internal", "environment": "uat"
+  }]
 }
 ```
 
-The consumer declares `role: consumes` with the same origin/environment and its literal method/path. `event` uses `publishes/subscribes` and a broker scope; `database` uses `writes/reads` and a database scope; `grpc` and `package` use `provides/consumes` and an explicit service/package identity. Owner declarations are reviewable assumptions. Where parsed HTTP routes contradict a provider declaration, the join is withheld.
+The consumer declares `consumes` with the same deployment identity and its expected method/path. See the bundled [polyglot workspace](examples/polyglot-bank/README.md) for complete examples.
 
-Each analysis currently supports **8 repositories**, **25 MB / 10,000 captured text files per repository**, a **30,000 file traversal limit**, and **90 seconds per native parser invocation**. Impact review traversal is capped at **2,000 nodes / 12 hops**; truncation is explicit. Node browsing uses indexed SQL pages of at most 200 nodes. These are prototype capacity controls, not production capacity claims.
+## Verification you can inspect
 
-The parser is pinned rather than upgraded during analysis. Its binary digest, version, extractor policy, fact-file hash and source fingerprint are recorded; its receipt is validated before facts are accepted. Parser/version failure falls back to file evidence with explicit unknowns.
+Automated checks cover backend behavior, presentation logic, JavaScript syntax and browser interactions. Provider tests use mock transports, including timeouts, unavailable accounts, rate limits, malformed output and unknown citations. See [VERIFICATION.json](VERIFICATION.json) for recorded results and [the demo](DEMO.md) for a separately captured live AI run.
 
-See [the five-project review](REFERENCE_REVIEW.md) and [architecture](ARCHITECTURE.md).
-
-## NVIDIA configuration
-
-The default model is `nvidia/nemotron-3-super-120b-a12b`, configurable through `NVIDIA_MODEL`. NVIDIA advertises a free prototype endpoint in its [model catalog](https://build.nvidia.com/nvidia/nemotron-3-super-120b-a12b/build). Account availability, credits and limits must be checked for your key; the application does not promise unlimited or permanently free inference.
-
-The adapter uses the documented [chat completions endpoint](https://docs.api.nvidia.com/nim/reference/nvidia-nemotron-3-super-120b-a12b-infer). It handles HTTP 202 with up to three budgeted [invocation status GETs](https://docs.api.nvidia.com/cloud-functions/reference/getfunctioninvocationresult), retaining unresolved request IDs without duplicating the inference POST. It does not follow redirects that could disclose credentials.
-
-Defaults are **one concurrent inference, six requests per minute, 24,000 conservatively estimated token units per minute and 100 daily requests**. These are adjustable application guardrails, not NVIDIA published quotas. Reservations use UTF-8 bytes plus the output allowance; this intentionally overestimates normal English input and is not the provider tokenizer. Actual reported token usage is attached to accepted model responses.
-
-NVIDIA [documents hosted-service rate limits](https://docs.nvidia.com/rag/latest/troubleshooting.html); the platform respects Retry-After, shares cooldown across workers and opens a circuit after three failures. It preserves source findings when AI is unavailable. Transport / provider failures are not automatically resubmitted because an accepted-but-lost response can consume trial credits. An explicit new analysis can retry after cooldown; successful repeated contexts use the validated cache.
-
-Context is scoped to affected evidence and capped; credentials remain backend environment variables. Repository text is treated as untrusted prompt data. AI outputs cannot modify repositories, execute code, send messages, merge, deploy or clear the review gate. Provenance validation does **not** prove an AI statement is semantically correct.
-
-## Verify
-
-Current validation: **49 passing platform tests**, JavaScript syntax checks, five archive source samples (997 evaluated files), and independent authored Python/Java failure experiments. `VERIFICATION.json` records scope and limitations.
-
-```powershell
+```bash
 python -m pytest -q
+node --test tests/test_experience.cjs
 python scripts/verify_polyglot.py
 python scripts/verify_fixture.py
 ```
 
-For an already downloaded Maven cache, use `--maven-repo=C:/path/to/repository` on the verification script; this enables offline builds. The script authors temporary copies only of the bundled fixture. Expected outcomes: baseline **5 / 5 pass**; producer-only change **2 of 5 fail**; producer + consumer fix **5 / 5 pass**. The failing tests verify monetary conservation and replay totals. Gherkin is a draft handoff; this fixture's executable suite is JUnit, not a claimed Defender execution.
+The last two commands independently execute the authored fixtures in disposable copies. The Java experiment requires Java and Maven; an existing Maven cache can be supplied with `--maven-repo=C:/path/to/repository`. Building the sample with `mvn package` also enables its four HTTP services; setup is in the [banking fixture README](examples/banking-platform/README.md).
 
-To exercise actual HTTP downstreams:
+[VERIFICATION.json](VERIFICATION.json) records validation scope and prior fixture experiments. [REFERENCE_REVIEW.md](REFERENCE_REVIEW.md) documents a bounded evaluation of five reference archives: **997 source files evaluated**, without executing their repository code. This is compatibility evidence, not a calibrated accuracy benchmark.
 
-```powershell
-cd examples/banking-platform
-mvn package
-# Four terminals:
-java -jar reporting-service/target/reporting-service-1.0.0-exec.jar
-java -jar reconciliation-service/target/reconciliation-service-1.0.0-exec.jar
-java -jar ledger-service/target/ledger-service-1.0.0-exec.jar
-java -jar payments-service/target/payments-service-1.0.0-exec.jar
-```
+## Safety and scope
 
-Service ports are 9101–9104. POST a synthetic USD payment to `http://localhost:9101/payments`, with `{"paymentId":"demo-1","amount":125.50,"currency":"USD"}`. Reporting total is exposed at `http://localhost:9104/reporting/total`. These services deliberately use in-memory storage; production outbox delivery, durable financial posting and reconciliation are outside the authored fixture's scope.
+Analysis reads source and validates the proposed diff without editing repositories, running their code, merging or deploying. AI can produce review drafts only; it cannot clear the release gate. Schema and citation checks verify response structure and supplied references, not the correctness of every interpretation.
 
-For an automated HTTP check which binds all four services to loopback and stops its own processes afterward, run `scripts/verify_http.ps1` from the project root after packaging the Maven fixture.
+Captured evidence is sent to NVIDIA when hosted inference is configured. Use approved repositories. Secret-file exclusions and pattern redaction reduce exposure but do not constitute a complete data-loss-prevention system. Production use needs approved code egress, isolated extraction and test runners, SSO/RBAC, tenant isolation, retention, migrations and operational monitoring.
 
-## PostgreSQL deployment
+Impact Studio provides traceable evidence and explicit gaps. It does not promise zero defects, universal downstream discovery or automatic banking release approval.
 
-Set strong local `POSTGRES_PASSWORD` and `IMPACT_API_TOKEN` values in .env (URL-safe hex values are convenient), then:
+## Repository layout
 
-```shell
-docker compose up --build -d
-docker compose up -d --scale worker=2
-```
+| Path | Purpose |
+|---|---|
+| `studio/` | API, extraction, knowledge graph, analysis, provider controls and guided UI. |
+| `examples/` | Small polyglot and Maven banking source fixtures, contracts and proposed diffs. |
+| `tests/` | Backend and presentation regression checks. |
+| `scripts/` | Fixture generation and independent verification. |
+| `docs/demo/` | Application screenshots and historical capture receipt. |
+| [prompt.md](prompt.md) | Reproducible engineering brief and the runtime inference contract. |
+| [DEMO.md](DEMO.md) | Guided walkthrough with application screenshots. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Detailed system design and boundaries. |
+| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | Dependency and reference acknowledgements. |
 
-The API runs two processes. Workers share PostgreSQL queue leases, provider budgets and cached responses. The init service performs schema bootstrap once before replicas start. Provider concurrency stays at one despite adding workers; scaling source analysis does not pretend to increase free provider capacity. Use **API connection** in the UI to supply IMPACT_API_TOKEN, never NVIDIA_API_KEY.
-
-This is a tested hackathon prototype, not a production banking certification. PostgreSQL/Docker orchestration has not been executed in this workspace because Docker is unavailable. For an institutional deployment, add versioned schema migrations, SSO / RBAC and tenant isolation, approved provider data policy, retention and encrypted storage, runtime trace / broker adapters, isolated test runners and a governed release evidence store. See [the architecture](ARCHITECTURE.md) for the implemented boundaries and scale path.
+The launcher creates `data/` for the local database and logs. Those files stay local; source, test fixtures and demo screenshots belong in the repository.

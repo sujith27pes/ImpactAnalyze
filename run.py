@@ -2,7 +2,6 @@
 import argparse
 import os
 from pathlib import Path
-import shutil
 import signal
 import socket
 import subprocess
@@ -37,8 +36,6 @@ def main():
     if sys.version_info < (3, 12):
         parser.error('Python 3.12 or later is required')
     os.chdir(ROOT)
-    if not (ROOT / '.env').is_file():
-        shutil.copyfile(ROOT / '.env.example', ROOT / '.env')
     try:
         import uvicorn
         import fastapi
@@ -77,7 +74,7 @@ def main():
         worker = subprocess.Popen([sys.executable, '-m', 'studio.worker'], cwd=ROOT,
                                   stdout=output, stderr=errors, creationflags=flags)
         print(f'Impact Studio: http://127.0.0.1:{args.port} | worker PID: {worker.pid}', flush=True)
-        print('Press Ctrl+C to stop the API and worker. Credentials are read from the backend .env.', flush=True)
+        print('Press Ctrl+C to stop the API and worker. Configure credentials through environment variables or a private backend .env.', flush=True)
         try:
             uvicorn.run(app, host='127.0.0.1', port=args.port)
         except KeyboardInterrupt:
